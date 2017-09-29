@@ -1117,27 +1117,31 @@ App.prototype.iOSversion() = function() {
  }
 
 App.prototype.addPolyline = function(polylineOptions, callback) {
-    if(iOSversion()[0] < 11)
+    var iosVersion = iosVersion();
+
+    if(iosVersion !== undefined && iosVersion[0] >= 11)
     {
-        var self = this;
-        polylineOptions.points = polylineOptions.points || [];
-        polylineOptions.color = HTMLColor2RGBA(polylineOptions.color || "#FF000080", 0.75);
-        polylineOptions.width = polylineOptions.width || 10;
-        polylineOptions.visible = polylineOptions.visible === undefined ? true : polylineOptions.visible;
-        polylineOptions.zIndex = polylineOptions.zIndex || 4;
-        polylineOptions.geodesic = polylineOptions.geodesic  === true;
-    
-        cordova.exec(function(result) {
-            var polyline = new Polyline(self, result.id, polylineOptions);
-            OVERLAYS[result.id] = polyline;
-            /*if (typeof polylineOptions.onClick === "function") {
-              polyline.on(plugin.google.maps.event.OVERLAY_CLICK, polylineOptions.onClick);
-            }*/
-            if (typeof callback === "function") {
-                callback.call(self, polyline, self);
-            }
-        }, self.errorHandler, PLUGIN_NAME, 'exec', ['Polyline.createPolyline', self.deleteFromObject(polylineOptions,'function')]);
+        return;
     }
+
+    var self = this;
+    polylineOptions.points = polylineOptions.points || [];
+    polylineOptions.color = HTMLColor2RGBA(polylineOptions.color || "#FF000080", 0.75);
+    polylineOptions.width = polylineOptions.width || 10;
+    polylineOptions.visible = polylineOptions.visible === undefined ? true : polylineOptions.visible;
+    polylineOptions.zIndex = polylineOptions.zIndex || 4;
+    polylineOptions.geodesic = polylineOptions.geodesic  === true;
+
+    cordova.exec(function(result) {
+        var polyline = new Polyline(self, result.id, polylineOptions);
+        OVERLAYS[result.id] = polyline;
+        /*if (typeof polylineOptions.onClick === "function") {
+            polyline.on(plugin.google.maps.event.OVERLAY_CLICK, polylineOptions.onClick);
+        }*/
+        if (typeof callback === "function") {
+            callback.call(self, polyline, self);
+        }
+    }, self.errorHandler, PLUGIN_NAME, 'exec', ['Polyline.createPolyline', self.deleteFromObject(polylineOptions,'function')]);
 };
 //-------------
 // Polygon
