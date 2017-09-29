@@ -1106,7 +1106,24 @@ App.prototype.addCircle = function(circleOptions, callback) {
 //-------------
 // Polyline
 //-------------
+// Add check ios version due to a bug in googleMaps sdk(addPolyline crash in iOS11)
+// Should be removed when googleMaps sdk fixed.
+App.prototype.iOSversion() = function() { 
+    if (/iP(hone|od|ad)/.test(navigator.platform)) {
+        var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+    
+        return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+    }
+ }
+
 App.prototype.addPolyline = function(polylineOptions, callback) {
+    var iosVersion = iosVersion();
+
+    if(iosVersion !== undefined && iosVersion[0] >= 11)
+    {
+        return;
+    }
+
     var self = this;
     polylineOptions.points = polylineOptions.points || [];
     polylineOptions.color = HTMLColor2RGBA(polylineOptions.color || "#FF000080", 0.75);
@@ -1119,7 +1136,7 @@ App.prototype.addPolyline = function(polylineOptions, callback) {
         var polyline = new Polyline(self, result.id, polylineOptions);
         OVERLAYS[result.id] = polyline;
         /*if (typeof polylineOptions.onClick === "function") {
-          polyline.on(plugin.google.maps.event.OVERLAY_CLICK, polylineOptions.onClick);
+            polyline.on(plugin.google.maps.event.OVERLAY_CLICK, polylineOptions.onClick);
         }*/
         if (typeof callback === "function") {
             callback.call(self, polyline, self);
