@@ -1106,25 +1106,38 @@ App.prototype.addCircle = function(circleOptions, callback) {
 //-------------
 // Polyline
 //-------------
-App.prototype.addPolyline = function(polylineOptions, callback) {
-    var self = this;
-    polylineOptions.points = polylineOptions.points || [];
-    polylineOptions.color = HTMLColor2RGBA(polylineOptions.color || "#FF000080", 0.75);
-    polylineOptions.width = polylineOptions.width || 10;
-    polylineOptions.visible = polylineOptions.visible === undefined ? true : polylineOptions.visible;
-    polylineOptions.zIndex = polylineOptions.zIndex || 4;
-    polylineOptions.geodesic = polylineOptions.geodesic  === true;
+// Add check ios version due to a bug in googleMaps sdk(addPolyline crash in iOS11)
+// Should be removed when googleMaps sdk fixed.
+App.prototype.iOSversion() = function() { 
+    if (/iP(hone|od|ad)/.test(navigator.platform)) {
+        var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+    
+        return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+    }
+ }
 
-    cordova.exec(function(result) {
-        var polyline = new Polyline(self, result.id, polylineOptions);
-        OVERLAYS[result.id] = polyline;
-        /*if (typeof polylineOptions.onClick === "function") {
-          polyline.on(plugin.google.maps.event.OVERLAY_CLICK, polylineOptions.onClick);
-        }*/
-        if (typeof callback === "function") {
-            callback.call(self, polyline, self);
-        }
-    }, self.errorHandler, PLUGIN_NAME, 'exec', ['Polyline.createPolyline', self.deleteFromObject(polylineOptions,'function')]);
+App.prototype.addPolyline = function(polylineOptions, callback) {
+    if(iOSversion()[0] < 11)
+    {
+        var self = this;
+        polylineOptions.points = polylineOptions.points || [];
+        polylineOptions.color = HTMLColor2RGBA(polylineOptions.color || "#FF000080", 0.75);
+        polylineOptions.width = polylineOptions.width || 10;
+        polylineOptions.visible = polylineOptions.visible === undefined ? true : polylineOptions.visible;
+        polylineOptions.zIndex = polylineOptions.zIndex || 4;
+        polylineOptions.geodesic = polylineOptions.geodesic  === true;
+    
+        cordova.exec(function(result) {
+            var polyline = new Polyline(self, result.id, polylineOptions);
+            OVERLAYS[result.id] = polyline;
+            /*if (typeof polylineOptions.onClick === "function") {
+              polyline.on(plugin.google.maps.event.OVERLAY_CLICK, polylineOptions.onClick);
+            }*/
+            if (typeof callback === "function") {
+                callback.call(self, polyline, self);
+            }
+        }, self.errorHandler, PLUGIN_NAME, 'exec', ['Polyline.createPolyline', self.deleteFromObject(polylineOptions,'function')]);
+    }
 };
 //-------------
 // Polygon
