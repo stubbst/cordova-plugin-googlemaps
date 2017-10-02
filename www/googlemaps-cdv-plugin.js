@@ -1108,7 +1108,7 @@ App.prototype.addCircle = function(circleOptions, callback) {
 //-------------
 // Add check ios version due to a bug in googleMaps sdk(addPolyline crash in iOS11)
 // Should be removed when googleMaps sdk fixed.
-App.prototype.iOSversion() = function() { 
+function iOSversion() { 
     if (/iP(hone|od|ad)/.test(navigator.platform)) {
         var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
     
@@ -1117,7 +1117,7 @@ App.prototype.iOSversion() = function() {
  }
 
 App.prototype.addPolyline = function(polylineOptions, callback) {
-    var iosVersion = iosVersion();
+    var iosVersion = iOSversion();
 
     if(iosVersion !== undefined && iosVersion[0] >= 11)
     {
