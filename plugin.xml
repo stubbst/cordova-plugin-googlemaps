@@ -188,10 +188,7 @@
             <string>$API_KEY_FOR_IOS</string>
         </config-file>
         <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
-            <string>Show your location on the map</string>
-        </config-file>
-        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
-            <string>Trace your location on the map</string>
+            <string>Location access is required to use current location as a waypoint for mileage expenses</string>
         </config-file>
 
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">
